@@ -7,7 +7,8 @@ function loop(){
 basic.forever(function () {
  	for (let i=0; i<1; i++){
         basic.showString("Hello!")
-        loop()
+        loop()                    // obviously this line isn't exactly what the assignment is asking for. They want me to attach "i" to the previous string.
+                                  // how do I do that since "i" represents a number in the loop? And why even use "i" to attach the string instead of some other variable?
      }
 
 })

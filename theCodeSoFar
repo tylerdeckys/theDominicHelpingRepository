@@ -1,0 +1,13 @@
+function loop(){
+ 	for (let i=0; i<1; i++){
+        basic.showString("Hi")
+    }   
+}
+
+basic.forever(function () {
+ 	for (let i=0; i<1; i++){
+        basic.showString("Hello!")
+        loop()
+     }
+
+})

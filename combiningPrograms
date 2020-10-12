@@ -1,0 +1,218 @@
+
+function line (length : number, position : number, delay : number)
+//prints one line with optional delay
+{
+    for (let i = 0; i < length; i++)
+    {   
+        led.plot(i, position)
+        if (delay > 0)
+        basic.pause(delay)
+    }
+}
+
+function allLines (lengthsP : number[]) //Takes line function and prints each line
+{
+    basic.clearScreen()
+    for (let i = 0; i < lengthsP.length; i++)
+    {
+        line(lengthsP[i],i,0)
+    }
+}
+
+function moveLines (lengthsP : number[]) 
+//moves every element one index to left
+// [2,4,3,3,5] ---> [4,3,3,5,0]
+{
+
+    for (let i = 0; i < lengthsP.length-1 ;i++)
+    {
+        lengthsP[i] = lengthsP[i+1]
+    }
+    lengthsP[lengthsP.length-1] = 0
+}
+
+let currentLine = [0,0,0,0,0]
+
+function coding ()
+{
+    for (let i = 0; i<currentLine.length ;i++)
+
+    {
+    allLines(currentLine)
+    basic.pause(250)
+    currentLine[i] = randint(1, 5)
+    line(currentLine[i], i, 250)   
+    }
+    basic.forever(function () {
+     {
+    basic.pause(250)
+    moveLines(currentLine) 
+    allLines(currentLine)  //clears screen, prints current "currrentLine"
+    currentLine[4] = randint(1, 5) // declares length of bottom line
+    line(currentLine[4], 4,250) //prints bottom line with delay
+    }    
+    })
+}
+ ///////////////////////
+ //Draws all drops - operates under the assumption each list is the same length
+function drawAllDrops(x : number[], y : number[], bright : number[]) {
+    basic.clearScreen()
+    for (let i = 0; i < x.length; i++) {
+        led.plotBrightness(x[i], y[i], bright[i])
+    }
+}
+
+// moves all drops and generates a random new drop if they fall off the screen - operates under the assumption each list is the same length
+function moveDrops(x : number[], y : number[], speed : number[], ticks : number[], bright : number[]) {
+    for (let i = 0; i < x.length; i++) { //for each drop
+        ticks[i] += 1 //iterate the drops counter
+        if (ticks[i] >= speed[i]) { //if the counter reaches the speed, it's time for the drop to move
+            ticks[i] = 0 //reset the counter
+            y[i] += 1
+        }
+        if (y[i] > 4) { //if the drop falls of the screen, generate new drop
+            y[i] = 0 //reset y value
+            x[i] = randint(0, 4) //put in random column
+            speed[i] = randint(1, 3) //randomize the speed
+            bright[i] = 255 - (speed[i] - 1) * 100 //make the brightness inversly proportional to the speed
+        }
+    }
+}
+
+let x = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4] //x value of each drop
+let y = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5] //y value of each drop
+let bright = [200, 200, 200, 200, 200, 200, 200, 200, 200, 200] //brightness of each drop
+let speed = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2] //speed - note: higher value = lower speed
+let ticks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] //current tick, increments each iteration until it hits the speed, then it's time to move
+
+
+function rain ()
+{
+    drawAllDrops(x, y, bright)
+    moveDrops(x, y, speed, ticks, bright)
+    basic.pause(50)
+}
+/////////////////////
+//x-axis path of each row
+let row: number[] = [0,1,2,3,4]
+
+//row starts on bottom
+let position = 4
+
+//array for the x value of lingering line(s)
+let lingerX:  number[] = []
+
+//plots one row where each individual point has a 25% chance to not be plotted
+//also performs a check where if the points below is not lit, the x-axis +=1
+function barRow (length : number[], position: number)
+{
+
+    for (let i = 0; i < length.length; i ++)
+    {
+        let x = randint(1, 3)
+
+        if (x < 2)
+        i++
+
+        //if point below is not lit, move one point over
+        // ?? How can I remove this redundancy? ??
+        if (led.point(length[i], position+1) == false && position < 4)
+        i++
+        if (led.point(length[i], position+1) == false && position < 4)
+        i++
+
+        //plot 
+        led.plot(length[i], position)
+        led.plotBrightness(length[i], position, -position*61 + 250)
+
+        //needed to unplot first line correctly
+        if (led.point(0,4)==false)
+        {
+            for (let i = 0; i < 5; i ++)
+            led.unplot(0, i)
+        }
+
+    }
+}
+
+//plots all rows with a delay between each row and clears screen
+function freqBars ()
+{
+    for (let i = 0; i < 5; i ++)
+    {
+        barRow(row, position)
+        basic.pause(100)
+        if (i<4)
+        position --
+    }
+
+    //populate the lingering line x axis'
+    for (let i = 0; i < 5; i ++)
+    {
+        if (led.point(i, position) == true)
+        lingerX.push(i)    
+    }
+
+    basic.clearScreen()
+
+    //replots tallest lines
+    for (let i = 0; i < 5; i++)
+    {
+        for (let i = 0; i < lingerX.length; i++)
+        {
+            led.plotBrightness(lingerX[i], position, -position*61 + 250)
+        }
+        position++
+    }
+
+    //resets tallest line array
+    for (let i = 0; i < 5; i++)
+    lingerX.pop()
+ 
+    position = 4
+    basic.pause(80)
+    basic.clearScreen()
+   
+
+}
+/////////////////
+enum Mode { Asleep = 0, Working}
+
+let mode : Mode = Mode.Asleep
+
+
+input.onButtonPressed(Button.A, function () 
+{
+    mode = Mode.Working  
+})
+
+input.onButtonPressed(Button.B, function () 
+{
+    mode = Mode.Asleep
+})
+    let gesture : Gesture = Gesture.TiltLeft
+
+    let gestures : Gesture[] = [Gesture.TiltLeft, Gesture.TiltRight]
+
+while(true)
+{
+    if (mode == 0)
+    {
+        coding()
+    }
+    else
+    {
+        basic.clearScreen()
+        input.onGesture(Gesture.TiltLeft, function () 
+        {
+            basic.clearScreen()
+            rain()
+        })
+
+         input.onGesture(Gesture.TiltRight, function () 
+        {
+            basic.clearScreen()
+            freqBars()
+        })
+    }
+}

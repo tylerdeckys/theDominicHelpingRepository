@@ -19,3 +19,6 @@
 - Button input seems to work to turn off the program but won't execute coding() again when turned back on.
 
 - Gestures do execute rain() or freqBars()
+
+
+[My Code](combiningPrograms)

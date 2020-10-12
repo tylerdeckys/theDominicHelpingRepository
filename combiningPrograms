@@ -33,26 +33,24 @@ function moveLines (lengthsP : number[])
 
 let currentLine = [0,0,0,0,0]
 
-function coding ()
-{
-    for (let i = 0; i<currentLine.length ;i++)
 
+    for (let i = 0; i<currentLine.length ;i++)
     {
     allLines(currentLine)
     basic.pause(250)
     currentLine[i] = randint(1, 5)
     line(currentLine[i], i, 250)   
     }
-    basic.forever(function () {
-     {
+
+function coding ()
+    {
     basic.pause(250)
     moveLines(currentLine) 
     allLines(currentLine)  //clears screen, prints current "currrentLine"
     currentLine[4] = randint(1, 5) // declares length of bottom line
     line(currentLine[4], 4,250) //prints bottom line with delay
-    }    
-    })
-}
+    }
+
  ///////////////////////
  //Draws all drops - operates under the assumption each list is the same length
 function drawAllDrops(x : number[], y : number[], bright : number[]) {
@@ -194,25 +192,22 @@ input.onButtonPressed(Button.B, function ()
 
     let gestures : Gesture[] = [Gesture.TiltLeft, Gesture.TiltRight]
 
-while(true)
-{
-    if (mode == 0)
+  
+ while (mode == 0)
     {
         coding()
     }
-    else
-    {
-        basic.clearScreen()
+ 
+
         input.onGesture(Gesture.TiltLeft, function () 
-        {
-            basic.clearScreen()
+        {while (gestures[0])
             rain()
         })
+ 
+
 
          input.onGesture(Gesture.TiltRight, function () 
-        {
-            basic.clearScreen()
+        {    while (gestures[1])
             freqBars()
         })
-    }
-}
+

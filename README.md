@@ -4,7 +4,7 @@
 
 **Perameters:**
 
--In Working mode, keep calling coding().
+- In Working mode, keep calling coding().
 
 - In Asleep mode, keep calling the screensaver function which corresponds to the last gesture detected, or the default.
 
